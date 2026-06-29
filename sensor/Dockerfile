@@ -3,7 +3,8 @@ WORKDIR /app
 
 COPY shared/package.json ./shared/
 COPY shared/src/          ./shared/src/
-RUN cd shared && npm install
+COPY shared/tsconfig.json ./shared/
+RUN cd shared && npm install && npm run build
 
 COPY sensor/package.json ./sensor/
 RUN cd sensor && npm install

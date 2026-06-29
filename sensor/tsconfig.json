@@ -8,11 +8,7 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "paths": {
-      "@iot/shared": ["../shared/src/index.ts"],
-      "@iot/shared/*": ["../shared/src/*"]
-    }
+    "resolveJsonModule": true
   },
   "include": ["src"]
 }

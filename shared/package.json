@@ -2,8 +2,12 @@
   "name": "@iot/shared",
   "version": "1.0.0",
   "type": "module",
-  "description": "",
-  "main": "./src/index.js",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "mongoose": "^8.5.0",
     "zod": "^4.4.3"
@@ -11,9 +15,5 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "typescript": "^5.5.0"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "private": true
+  }
 }

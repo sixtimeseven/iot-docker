@@ -39,7 +39,7 @@ services:
     build:
       context: .
       dockerfile: device/Dockerfile
-#    restart: unless-stopped
+    restart: unless-stopped
     depends_on:
       mongo:
         condition: service_healthy
@@ -54,7 +54,7 @@ services:
     build:
       context: .
       dockerfile: sensor/Dockerfile
-#    restart: unless-stopped
+    restart: unless-stopped
     depends_on:
       mongo:
         condition: service_healthy

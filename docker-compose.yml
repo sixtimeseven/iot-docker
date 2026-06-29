@@ -1,0 +1,69 @@
+services:
+  # ── Infrastructure ──────────────────────────────────────────────
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: iotdb
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"          # expose for local debugging only
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo-express:
+    image: mongo-express:1
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/iotdb
+      ME_CONFIG_BASICAUTH: "false"
+    ports:
+      - "8081:8081"
+
+  broker:
+    build: ./broker
+    restart: unless-stopped
+    ports:
+      - "1883:1883"   # MQTT/TCP  (device service → broker)
+      - "8888:8888"   # MQTT/WS   (dashboard browser → broker)
+
+  # ── Application services ─────────────────────────────────────────
+  device:
+    build:
+      context: .
+      dockerfile: device/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+      broker:
+        condition: service_started
+    environment:
+      MONGO_URL: mongodb://mongo:27017/iotdb
+      BROKER_URL: mqtt://broker:1883
+      DEVICE_ID: pi01
+
+  sensor:
+    build:
+      context: .
+      dockerfile: sensor/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+      broker:
+        condition: service_started
+    environment:
+      MONGO_URL: mongodb://mongo:27017/iotdb
+      BROKER_URL: mqtt://broker:1883
+      DEVICE_ID: pi01
+
+volumes:
+  mongo-data:

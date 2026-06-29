@@ -4,11 +4,15 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "dist",
-    "rootDirs": ["src", "../shared/src"],
+    "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@iot/shared": ["../shared/src/index.ts"],
+      "@iot/shared/*": ["../shared/src/*"]
+    }
   },
-  "include": ["src", "../shared/src"]
+  "include": ["src"]
 }

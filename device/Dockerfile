@@ -10,7 +10,7 @@ RUN cd device && npm install
 
 COPY device/src/       ./device/src/
 COPY device/tsconfig.json ./device/
-RUN cd device && npm run build && echo "=== dist contents ===" && find dist -type f
+RUN cd device && npm run build
 
 WORKDIR /app/device
 CMD ["node", "dist/index.js"]

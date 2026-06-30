@@ -2,51 +2,238 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>IoT Prototype Dashboard</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font-sans); background: transparent; color: var(--text-primary); }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 1rem 0; }
-  .card { background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; }
-  .card-full { grid-column: 1 / -1; }
-  .card-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--fill-danger); flex-shrink: 0; }
-  .status-dot.connected { background: var(--fill-success); }
-  .status-text { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
-  .status-text.connected { color: var(--text-success); }
-  .relay-buttons { display: flex; gap: 8px; margin-top: 4px; }
-  .btn { padding: 8px 18px; border-radius: var(--radius); border: 0.5px solid var(--border-strong); background: transparent; color: var(--text-primary); font-size: 14px; cursor: pointer; font-family: var(--font-sans); transition: background 0.1s; }
-  .btn:hover { background: var(--surface-1); }
-  .btn:active { transform: scale(0.98); }
-  .btn-on { border-color: var(--border-success); color: var(--text-success); }
-  .btn-on:hover { background: var(--bg-success); }
-  .btn-off { border-color: var(--border-danger); color: var(--text-danger); }
-  .btn-off:hover { background: var(--bg-danger); }
-  .relay-state { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
-  .relay-pill { padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; background: var(--bg-danger); color: var(--text-danger); border: 0.5px solid var(--border-danger); }
-  .relay-pill.on { background: var(--bg-success); color: var(--text-success); border-color: var(--border-success); }
-  .metric-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
-  .metric { background: var(--surface-1); border-radius: var(--radius); padding: 10px 12px; }
-  .metric-val { font-size: 22px; font-weight: 500; line-height: 1.2; }
-  .metric-key { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .log-area { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); max-height: 180px; overflow-y: auto; line-height: 1.6; margin-top: 4px; }
-  .log-line { padding: 2px 0; border-bottom: 0.5px solid var(--border); }
-  .log-line:last-child { border-bottom: none; }
-  .log-ts { color: var(--text-muted); margin-right: 6px; }
-  .log-topic { color: var(--text-accent); margin-right: 6px; }
-  .pending-area { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); margin-top: 4px; min-height: 32px; }
-  .pending-none { color: var(--text-muted); font-style: italic; font-family: var(--font-sans); font-size: 13px; }
-  .pending-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 0.5px solid var(--border); }
-  .pending-id { color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; max-width: 200px; white-space: nowrap; }
-  .sensor-row { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
-  .sensor-val { font-size: 20px; font-weight: 500; }
-  .sensor-badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--bg-accent); color: var(--text-accent); border: 0.5px solid var(--border-accent); }
-  .section-title { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-  .divider { border: none; border-top: 0.5px solid var(--border); margin: 10px 0; }
-  .device-id { font-family: var(--font-mono); font-size: 13px; color: var(--text-accent); }
-</style>
+  <title>IoT Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #1a1a1a;
+      background: #f0eeea;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      color: #1a1a1a;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 900px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 0.5px solid #d8d5cf;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+
+    .card-full { grid-column: 1 / -1; }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Connection */
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #e24b4a;
+      flex-shrink: 0;
+    }
+    .status-dot.connected { background: #639922; }
+
+    .status-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: #888;
+    }
+    .status-text.connected { color: #3b6d11; }
+
+    .device-id {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 13px;
+      color: #185fa5;
+      margin-top: 6px;
+    }
+
+    /* Relay */
+    .relay-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      background: #fcebeb;
+      color: #a32d2d;
+      border: 0.5px solid #f09595;
+    }
+    .relay-pill.on {
+      background: #eaf3de;
+      color: #3b6d11;
+      border-color: #97c459;
+    }
+
+    .relay-ts {
+      font-size: 12px;
+      color: #888;
+      margin-left: 8px;
+    }
+
+    .relay-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    button {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: 0.5px solid #c8c5bf;
+      background: transparent;
+      color: #1a1a1a;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    button:hover { background: #f0eeea; }
+    button:active { transform: scale(0.98); }
+
+    .btn-on { border-color: #97c459; color: #3b6d11; }
+    .btn-on:hover { background: #eaf3de; }
+
+    .btn-off { border-color: #f09595; color: #a32d2d; }
+    .btn-off:hover { background: #fcebeb; }
+
+    /* Sensor */
+    .sensor-val {
+      font-size: 28px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-top: 4px;
+    }
+
+    .sensor-badge {
+      display: none;
+      margin-top: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e6f1fb;
+      color: #185fa5;
+      border: 0.5px solid #85b7eb;
+    }
+
+    .sensor-ts {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    /* Stats */
+    .metric-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .metric {
+      background: #f0eeea;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .metric-val {
+      font-size: 24px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .metric-key {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    /* Pending */
+    .pending-none {
+      font-size: 13px;
+      color: #888;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .pending-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      border-bottom: 0.5px solid #e8e5df;
+      font-size: 13px;
+    }
+    .pending-row:last-child { border-bottom: none; }
+
+    .pending-id {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 11px;
+      color: #888;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 260px;
+      white-space: nowrap;
+    }
+
+    .pending-intent {
+      font-size: 11px;
+      color: #888;
+      white-space: nowrap;
+      margin-left: 12px;
+    }
+
+    /* Log */
+    .log-area {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 12px;
+      color: #444;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 4px;
+    }
+
+    .log-line {
+      padding: 3px 0;
+      border-bottom: 0.5px solid #f0eeea;
+      line-height: 1.5;
+    }
+    .log-line:last-child { border-bottom: none; }
+
+    .log-ts { color: #aaa; margin-right: 6px; }
+    .log-topic { color: #185fa5; margin-right: 6px; }
+  </style>
 </head>
-<h2 class="sr-only">IoT prototype dashboard — relay control and telemetry monitor</h2>
+<body>
+
+<h1>IoT prototype dashboard</h1>
 
 <div class="grid">
 
@@ -56,34 +243,26 @@
       Broker connection
     </div>
     <div class="status-text" id="conn-text">Disconnected</div>
-    <div style="margin-top:8px; font-size:12px; color:var(--text-muted);">
-      Device: <span class="device-id" id="device-id-label">pi01</span>
-    </div>
+    <div class="device-id">Device: <span id="device-id-label">pi01</span></div>
   </div>
 
   <div class="card">
     <div class="card-label">Relay 1 state</div>
-    <div class="relay-state">
-      <div class="relay-pill" id="relay-pill">OFF</div>
-      <span style="font-size:13px;color:var(--text-muted);" id="relay-ts">—</span>
+    <div style="margin-top: 4px;">
+      <span class="relay-pill" id="relay-pill">OFF</span>
+      <span class="relay-ts" id="relay-ts">—</span>
     </div>
-    <div class="relay-buttons" style="margin-top:12px;">
-      <button class="btn btn-on" onclick="sendRelayCommand(true)">
-        <i class="ti ti-bolt" aria-hidden="true"></i> Turn on
-      </button>
-      <button class="btn btn-off" onclick="sendRelayCommand(false)">
-        <i class="ti ti-bolt-off" aria-hidden="true"></i> Turn off
-      </button>
+    <div class="relay-buttons">
+      <button class="btn-on" onclick="sendRelayCommand(true)">Turn on</button>
+      <button class="btn-off" onclick="sendRelayCommand(false)">Turn off</button>
     </div>
   </div>
 
   <div class="card">
     <div class="card-label">Sensor telemetry — loopA</div>
-    <div class="sensor-row">
-      <div class="sensor-val" id="loopA-val">—</div>
-      <div class="sensor-badge" id="loopA-badge" style="display:none">live</div>
-    </div>
-    <div style="font-size:12px;color:var(--text-muted);margin-top:6px;" id="loopA-ts">Waiting for data…</div>
+    <div class="sensor-val" id="loopA-val">—</div>
+    <div class="sensor-badge" id="loopA-badge">live</div>
+    <div class="sensor-ts" id="loopA-ts">Waiting for data…</div>
   </div>
 
   <div class="card">
@@ -102,7 +281,7 @@
 
   <div class="card card-full">
     <div class="card-label">Pending commands</div>
-    <div class="pending-area" id="pending-area">
+    <div id="pending-area">
       <div class="pending-none">No pending commands</div>
     </div>
   </div>
@@ -110,122 +289,126 @@
   <div class="card card-full">
     <div class="card-label">MQTT log</div>
     <div class="log-area" id="log-area">
-      <div class="log-line"><span class="log-ts">—</span><span style="color:var(--text-muted)">Waiting for connection…</span></div>
+      <div class="log-line"><span class="log-ts">—</span><span style="color:#aaa">Waiting for connection…</span></div>
     </div>
   </div>
 
 </div>
-</html>
+
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script>
-const deviceId = "pi01";
-const BROKER_WS = "ws://127.0.0.1:8888";
+  const deviceId   = "pi01";
+  const BROKER_WS  = "ws://127.0.0.1:8888";
 
-const pendingRequests = new Map();
-let cmdCount = 0;
-let telemCount = 0;
+  const pendingRequests = new Map();
+  let cmdCount   = 0;
+  let telemCount = 0;
 
-const dot         = document.getElementById("dot");
-const connText    = document.getElementById("conn-text");
-const relayPill   = document.getElementById("relay-pill");
-const relayTs     = document.getElementById("relay-ts");
-const loopAVal    = document.getElementById("loopA-val");
-const loopATs     = document.getElementById("loopA-ts");
-const loopABadge  = document.getElementById("loopA-badge");
-const logArea     = document.getElementById("log-area");
-const pendingArea = document.getElementById("pending-area");
-const statCmds    = document.getElementById("stat-cmds");
-const statTelem   = document.getElementById("stat-telem");
+  const dot         = document.getElementById("dot");
+  const connText    = document.getElementById("conn-text");
+  const relayPill   = document.getElementById("relay-pill");
+  const relayTs     = document.getElementById("relay-ts");
+  const loopAVal    = document.getElementById("loopA-val");
+  const loopATs     = document.getElementById("loopA-ts");
+  const loopABadge  = document.getElementById("loopA-badge");
+  const logArea     = document.getElementById("log-area");
+  const pendingArea = document.getElementById("pending-area");
+  const statCmds    = document.getElementById("stat-cmds");
+  const statTelem   = document.getElementById("stat-telem");
 
-function ts() {
-  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-}
-
-function addLog(topic, payload) {
-  const line = document.createElement("div");
-  line.className = "log-line";
-  const preview = typeof payload === "object" ? JSON.stringify(payload) : String(payload);
-  line.innerHTML = `<span class="log-ts">${ts()}</span><span class="log-topic">${topic}</span><span>${preview.slice(0, 80)}</span>`;
-  if (logArea.firstChild && logArea.firstChild.textContent.includes("Waiting")) logArea.innerHTML = "";
-  logArea.prepend(line);
-  if (logArea.children.length > 40) logArea.removeChild(logArea.lastChild);
-}
-
-function refreshPending() {
-  if (pendingRequests.size === 0) {
-    pendingArea.innerHTML = '<div class="pending-none">No pending commands</div>';
-    return;
+  function ts() {
+    return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   }
-  pendingArea.innerHTML = "";
-  for (const [id, cmd] of pendingRequests) {
-    const row = document.createElement("div");
-    row.className = "pending-row";
-    row.innerHTML = `<span class="pending-id">${id}</span><span style="color:var(--text-muted);font-size:11px;">relay ${cmd.relay} → ${cmd.state ? "ON" : "OFF"}</span>`;
-    pendingArea.appendChild(row);
+
+  function addLog(topic, payload) {
+    const line = document.createElement("div");
+    line.className = "log-line";
+    const preview = typeof payload === "object" ? JSON.stringify(payload) : String(payload);
+    line.innerHTML = `<span class="log-ts">${ts()}</span><span class="log-topic">${topic}</span><span>${preview.slice(0, 100)}</span>`;
+    if (logArea.children.length === 1 && logArea.firstChild.textContent.includes("Waiting")) {
+      logArea.innerHTML = "";
+    }
+    logArea.prepend(line);
+    if (logArea.children.length > 40) logArea.removeChild(logArea.lastChild);
   }
-}
 
-const client = mqtt.connect(BROKER_WS);
+  function refreshPending() {
+    if (pendingRequests.size === 0) {
+      pendingArea.innerHTML = '<div class="pending-none">No pending commands</div>';
+      return;
+    }
+    pendingArea.innerHTML = "";
+    for (const [id, cmd] of pendingRequests) {
+      const row = document.createElement("div");
+      row.className = "pending-row";
+      row.innerHTML = `<span class="pending-id">${id}</span><span class="pending-intent">relay ${cmd.relay} → ${cmd.state ? "ON" : "OFF"}</span>`;
+      pendingArea.appendChild(row);
+    }
+  }
 
-client.on("connect", () => {
-  dot.classList.add("connected");
-  connText.textContent = "Connected";
-  connText.classList.add("connected");
-  client.subscribe(`devices/${deviceId}/ack`);
-  client.subscribe(`devices/${deviceId}/state`);
-  client.subscribe(`devices/${deviceId}/telemetry/#`);
-  addLog("system", "Connected to broker");
-});
+  const client = mqtt.connect(BROKER_WS);
 
-client.on("reconnect", () => {
-  dot.classList.remove("connected");
-  connText.textContent = "Reconnecting…";
-  connText.classList.remove("connected");
-});
+  client.on("connect", () => {
+    dot.classList.add("connected");
+    connText.textContent = "Connected";
+    connText.classList.add("connected");
+    client.subscribe(`devices/${deviceId}/ack`);
+    client.subscribe(`devices/${deviceId}/state`);
+    client.subscribe(`devices/${deviceId}/telemetry/#`);
+    addLog("system", "Connected to broker");
+  });
 
-client.on("close", () => {
-  dot.classList.remove("connected");
-  connText.textContent = "Disconnected";
-  connText.classList.remove("connected");
-  addLog("system", "Disconnected");
-});
+  client.on("reconnect", () => {
+    dot.classList.remove("connected");
+    connText.textContent = "Reconnecting…";
+    connText.classList.remove("connected");
+  });
 
-client.on("error", (err) => addLog("error", err.message));
+  client.on("close", () => {
+    dot.classList.remove("connected");
+    connText.textContent = "Disconnected";
+    connText.classList.remove("connected");
+    addLog("system", "Disconnected");
+  });
 
-client.on("message", (topic, message) => {
-  let payload;
-  try { payload = JSON.parse(message.toString()); } catch { payload = message.toString(); }
-  addLog(topic, payload);
+  client.on("error", (err) => addLog("error", err.message));
 
-  if (topic.endsWith("/ack") && payload.requestId) {
-    pendingRequests.delete(payload.requestId);
+  client.on("message", (topic, message) => {
+    let payload;
+    try { payload = JSON.parse(message.toString()); } catch { payload = message.toString(); }
+    addLog(topic, payload);
+
+    if (topic.endsWith("/ack") && payload.requestId) {
+      pendingRequests.delete(payload.requestId);
+      refreshPending();
+    }
+
+    if (topic.endsWith("/state")) {
+      const isOn = payload.state === true;
+      relayPill.textContent = isOn ? "ON" : "OFF";
+      relayPill.className = "relay-pill" + (isOn ? " on" : "");
+      relayTs.textContent = new Date(payload.ts).toLocaleTimeString();
+    }
+
+    if (topic.includes("/telemetry/loopA")) {
+      telemCount++;
+      statTelem.textContent = telemCount;
+      loopAVal.textContent = payload.value;
+      loopATs.textContent = "Last update: " + new Date(payload.ts).toLocaleTimeString();
+      loopABadge.style.display = "inline-block";
+    }
+  });
+
+  function sendRelayCommand(state) {
+    const requestId = crypto.randomUUID();
+    const command = { requestId, deviceId, relay: 1, state };
+    pendingRequests.set(requestId, command);
+    cmdCount++;
+    statCmds.textContent = cmdCount;
     refreshPending();
+    addLog(`devices/${deviceId}/commands/relay`, command);
+    client.publish(`devices/${deviceId}/commands/relay`, JSON.stringify(command));
   }
-
-  if (topic.endsWith("/state")) {
-    const isOn = payload.state === true;
-    relayPill.textContent = isOn ? "ON" : "OFF";
-    relayPill.className = "relay-pill" + (isOn ? " on" : "");
-    relayTs.textContent = new Date(payload.ts).toLocaleTimeString();
-  }
-
-  if (topic.includes("/telemetry/loopA")) {
-    telemCount++;
-    statTelem.textContent = telemCount;
-    loopAVal.textContent = payload.value;
-    loopATs.textContent = "Last update: " + new Date(payload.ts).toLocaleTimeString();
-    loopABadge.style.display = "inline";
-  }
-});
-
-function sendRelayCommand(state) {
-  const requestId = crypto.randomUUID();
-  const command = { requestId, deviceId, relay: 1, state };
-  pendingRequests.set(requestId, command);
-  cmdCount++;
-  statCmds.textContent = cmdCount;
-  refreshPending();
-  addLog(`devices/${deviceId}/commands/relay`, command);
-  client.publish(`devices/${deviceId}/commands/relay`, JSON.stringify(command));
-}
 </script>
+</body>
+</html>

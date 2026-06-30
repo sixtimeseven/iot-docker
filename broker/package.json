@@ -6,7 +6,6 @@
   "dependencies": {
     "aedes": "^1.0.2",
     "aedes-server-factory": "^0.2.1",
-    "ws": "^8.21.0"
   },
   "main": "index.js",
   "scripts": {

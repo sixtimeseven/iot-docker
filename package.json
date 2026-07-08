@@ -1,0 +1,26 @@
+{
+  "name": "iot-docker",
+  "version": "1.0.0",
+  "packageManager": "yarn@4.9.2",
+  "engines": {
+    "node": ">22.0.0"
+  },
+  "workspaces": [
+    "device",
+    "shared",
+    "sensor",
+    "broker"
+  ],
+  "scripts": {
+    "build": "yarn workspaces foreach -At run build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sixtimeseven/iot-docker.git"
+  },
+  "private": true
+}

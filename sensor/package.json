@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "dev":   "tsc --watch"
+    "dev": "tsc --watch"
   },
   "dependencies": {
     "@iot/shared": "file:../shared",

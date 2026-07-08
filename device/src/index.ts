@@ -4,7 +4,7 @@ import { initQueue } from "./queue.js";
 import { restoreState } from "./startup.js";
 import { startRelayWorker } from "./relay-worker.js";
 
-const MONGO_URL = process.env.MONGO_URL ?? "mongodb://localhost:27017/iotdb";
+const MONGO_URL = process.env.MONGO_URL ?? "mongodb://127.0.0.1:27017/iotdb";
 const DEVICE_ID = process.env.DEVICE_ID ?? "pi01";
 
 async function boot() {

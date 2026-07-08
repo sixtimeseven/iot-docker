@@ -2,15 +2,15 @@ import { z } from "zod";
 
 // ── Relay command (API → broker → device) ────────────────────────
 export const RelayCmdSchema = z.object({
-  requestId: z.string().uuid(),
+  requestId: z.uuid(),
   deviceId:  z.string(),
-  relay:     z.number().int().positive(),
+  relayChannel:     z.number().int().positive(),
   state:     z.boolean(),
 });
 
 // ── Broker ACK (device → broker → dashboard) ────────────────────
 export const RelayAckSchema = z.object({
-  requestId: z.string().uuid(),
+  requestId: z.uuid(),
   status:    z.enum(["ok", "error"]),
   reason:    z.string().optional(),
 });

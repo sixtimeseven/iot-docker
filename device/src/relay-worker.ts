@@ -3,7 +3,6 @@
  *
  * Instead of listening on queueEvents (EventEmitter), the worker now
  * subscribes to devices/{deviceId}/internal/job-ready on the broker.
- * The rest of the drain loop is unchanged.
  */
 import type { MqttClient } from "mqtt";
 import {
@@ -17,10 +16,7 @@ import { setState } from "./state.js";
 
 let processing = false;
 
-export async function startRelayWorker(
-  client: MqttClient,
-  deviceId: string
-): Promise<void> {
+export async function startRelayWorker(client: MqttClient, deviceId: string): Promise<void> {
   console.log("[relay-worker] starting…");
 
   await resetProcessingCommands();

@@ -12,6 +12,10 @@ const DEVICE_ID  = process.env.DEVICE_ID  ?? "pi01";
 async function boot() {
   await connectMongo(MONGO_URL);
 
+  // clear old telemetry data from previous dev runs
+  await TelemetryModel.deleteMany({});
+  console.log("[sensor] previous dev telemetry cleared");
+
   const client = mqtt.connect(BROKER_URL, { clientId: `sensor-${DEVICE_ID}` });
 
   client.on("connect", () => console.log("[sensor] MQTT connected"));
@@ -43,7 +47,7 @@ async function boot() {
     );
 
     console.log(`[sensor] loopA = ${loopA}`);
-  }, 5000);
+  }, 15000);
 }
 
 boot().catch((err) => {

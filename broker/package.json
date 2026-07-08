@@ -2,14 +2,18 @@
   "name": "iot-broker",
   "version": "1.0.0",
   "type": "module",
-  "description": "",
-  "dependencies": {
-    "aedes": "^1.0.2",
-    "aedes-server-factory": "^0.2.1",
-  },
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "aedes": "^1.1.1",
+    "aedes-server-factory": "^0.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
   },
   "private": true
 }

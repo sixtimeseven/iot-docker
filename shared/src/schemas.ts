@@ -4,7 +4,7 @@ import { z } from "zod";
 export const RelayCmdSchema = z.object({
   requestId: z.uuid(),
   deviceId:  z.string(),
-  relayChannel:     z.number().int().positive(),
+  relay:     z.number().int().positive(),
   state:     z.boolean(),
 });
 

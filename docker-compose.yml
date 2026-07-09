@@ -52,20 +52,20 @@ services:
       BROKER_URL: mqtt://broker:1883
       DEVICE_ID: pi01
 
-#  sensor:
-#    build:
-#      context: .
-#      dockerfile: sensor/Dockerfile
-##    restart: unless-stopped
-#    depends_on:
-#      mongo:
-#        condition: service_healthy
-#      broker:
-#        condition: service_started
-#    environment:
-#      MONGO_URL: mongodb://mongo:27017/iotdb
-#      BROKER_URL: mqtt://broker:1883
-#      DEVICE_ID: pi01
+  sensor:
+    build:
+      context: .
+      dockerfile: sensor/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+      broker:
+        condition: service_started
+    environment:
+      MONGO_URL: mongodb://mongo:27017/iotdb
+      BROKER_URL: mqtt://broker:1883
+      DEVICE_ID: pi01
 
 volumes:
   mongo-data:

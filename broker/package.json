@@ -2,10 +2,10 @@
   "name": "iot-broker",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
     "aedes": "^1.1.1",
@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "tsx": "^4.19.4",
     "typescript": "^5.5.0"
   },
   "private": true
